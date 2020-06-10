@@ -7,12 +7,15 @@
 class ShiftinvertSolver {
 public:
   ShiftinvertSolver(const Eigen::Ref<const Eigen::MatrixXd> &matA,
-                    const Eigen::Ref<const Eigen::MatrixXd> &matB);
-  std::complex<double> compute(double sigma, int niter);
+                    const Eigen::Ref<const Eigen::MatrixXd> &matB, int maxiter,
+                    double tol);
+  std::complex<double> compute(std::complex<double> sigma);
 
 private:
   const int ndim_;
   Eigen::MatrixXd matA_;
   Eigen::MatrixXd matB_;
+  const int maxiter_;
+  const double tol_;
 };
 #endif

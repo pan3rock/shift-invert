@@ -26,8 +26,9 @@ std::complex<double> ShiftinvertSolver::compute(std::complex<double> sigma) {
     lamb = u.dot(x);
     lamb = 1.0 / lamb + sigma;
     double diff = std::abs(lamb - lamb_pre);
-    fmt::print("{:d} {:12.5f}{:12.5f}({:12.5e})\n", i, lamb.real(), lamb.imag(),
-               diff);
+    // fmt::print("{:d} {:12.5f}{:12.5f}({:12.5e})\n", i, lamb.real(),
+    // lamb.imag(),
+    //            diff);
     if (diff < tol_) {
       break;
     } else {

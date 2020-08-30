@@ -8,6 +8,7 @@ public:
   EzSolver(const Eigen::Ref<const Eigen::MatrixXd> &matA,
            const Eigen::Ref<const Eigen::MatrixXd> &matB);
   Eigen::VectorXcd compute(double sigma, int nev);
+  Eigen::VectorXcd compute_sym(double sigma, int nev);
 
 private:
   int ndim_;

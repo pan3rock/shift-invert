@@ -36,11 +36,42 @@ TEST_CASE("run through", "[solver]") {
   ev2 = sis.compute(sigma);
   fmt::print("eigenvalues near to ({:12.5f}, {:12.5f}): ({:12.5f}, {:12.5f})\n",
              sigma.real(), sigma.imag(), ev2.real(), ev2.imag());
+
+  double sigma3 = 0.03;
+  EzSolver ezs(matA, matB);
+  int nev = 2;
+  VectorXcd ev3 = ezs.compute(sigma3, nev);
+  for (int i = 0; i < ev3.size(); ++i) {
+    fmt::print("eigenvalues near to ({:12.5f}): ({:12.5f}, {:12.5f})\n", sigma3,
+               ev3(i).real(), ev3(i).imag());
+  }
 }
 
 void start_performance(int ndim, double sigma_in) {
   MatrixXd matA = MatrixXd::Random(ndim, ndim);
-  MatrixXd matB = MatrixXd::Random(ndim, ndim);
+  // MatrixXd matB = MatrixXd::Random(ndim, ndim);
+  // MatrixXd matB = MatrixXd::Random(ndim, ndim);
+  // MatrixXd matA = MatrixXd::Identity(ndim, ndim);
+  MatrixXd matB = MatrixXd::Identity(ndim, ndim);
+  for (int i = 1; i < ndim; ++i) {
+    for (int j = 0; j < i; ++j) {
+      matA(j, i) = matA(i, j);
+      matB(j, i) = matB(i, j);
+    }
+  }
+  // for (int i = 0; i < ndim; ++i) {
+  //   for (int j = 0; j < ndim; ++j) {
+  //     fmt::print("{:9.4f}", matA(i, j));
+  //   }
+  //   fmt::print("\n");
+  // }
+  // fmt::print("\n");
+  // for (int i = 0; i < ndim; ++i) {
+  //   for (int j = 0; j < ndim; ++j) {
+  //     fmt::print("{:9.4f}", matB(i, j));
+  //   }
+  //   fmt::print("\n");
+  // }
 
   Timer::begin("GeneralizedEigenSolver");
   GeneralizedEigenSolver<MatrixXd> ges(matA, matB);
@@ -64,26 +95,37 @@ void start_performance(int ndim, double sigma_in) {
   fmt::print("({:12.5f}, {:12.5f})\n", ev2.real(), ev2.imag());
   fmt::print("---------------------------------------------\n");
 
-  Timer::begin("ezsolver");
+  Timer::begin("ezsolver-asym");
   EzSolver ezs(matA, matB);
   int nev = 4;
   double sigma3 = sigma_in;
   VectorXcd ev3 = ezs.compute(sigma3, nev);
-  Timer::end("ezsolver");
+  Timer::end("ezsolver-asym");
+  Timer::begin("ezsolver-sym");
+  EzSolver ezs2(matA, matB);
+  VectorXcd ev4 = ezs2.compute_sym(sigma3, nev);
+  Timer::end("ezsolver-sym");
   fmt::print("eigenvalues near to {:12.5f}:\n", sigma3);
   for (int i = 0; i < nev; ++i) {
     fmt::print("({:12.5f}, {:12.5f})\n", ev3(i).real(), ev3(i).imag());
+  }
+  fmt::print("---------------------------------------------\n");
+  fmt::print("eigenvalues near to {:12.5f}:\n", sigma3);
+  for (int i = 0; i < nev; ++i) {
+    fmt::print("({:12.5f}, {:12.5f})\n", ev4(i).real(), ev4(i).imag());
   }
   fmt::print("---------------------------------------------\n");
 
   std::cout << Timer::summery() << std::endl;
 }
 
+TEST_CASE("performance 10", "[solver]") { start_performance(10, 0.59); }
+
 TEST_CASE("performance 20", "[solver]") { start_performance(20, 0.59); }
 
 TEST_CASE("performance 100", "[solver]") { start_performance(100, 0.59); }
 
-TEST_CASE("performance 1000", "[solver]") { start_performance(1000, 0.59); }
+TEST_CASE("performance 400", "[solver]") { start_performance(400, 0.59); }
 
 TEST_CASE("ezsolver performance", "[solver]") {
   int ndim = 100;

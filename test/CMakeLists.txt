@@ -1,6 +1,7 @@
 set(FILE_TEST
     test_main.cc
     test_solver.cc
+    test_ezarpack.cc
     )
 
 add_executable(unit_tests
